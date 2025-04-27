@@ -1,0 +1,140 @@
+
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
+
+!pip install quandl
+import quandl
+
+
+df = pd.read_csv('Stock price Analysis.csv')
+df
+
+
+import pandas as pd
+
+# Sample DataFrame
+data = {
+    'Date': ["2025-04-08 00:00:00-04:00"],
+    'Open': [5.42],
+    'High': [5.57],
+    'Low': [4.82],
+    'Close': [5.00],
+    'Volume': [15945300],
+    'Dividends': [0.0],
+    'Stock Splits': [0.0],
+    'Brand_Name': ['peloton'],
+    'Ticker': ['PTON'],
+    'Industry_Tag': ['fitness'],
+    'Country': ['usa']
+}
+
+df = pd.DataFrame(data)
+
+# Convert 'Date' to datetime format
+df['Date'] = pd.to_datetime(df['Date'])
+
+# Format the 'Date' column as 'YYYY-MM-DD'
+df['Formatted_Date'] = df['Date'].dt.strftime('%Y-%m-%d')
+
+# Adjust pandas display options to show all columns
+pd.set_option('display.max_columns', None)  # Show all columns
+pd.set_option('display.width', None)        # Adjust width automatically
+pd.set_option('display.max_rows', None)     # Show all rows if you need
+
+# Display the DataFrame
+print(df)
+
+
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.neighbors import KNeighborsRegressor  # Use regressor instead of classifier
+from sklearn.metrics import mean_squared_error
+
+# Load the CSV file into a DataFrame
+df = pd.read_csv('Stock price Analysis.csv')  # Replace 'your_file.csv' with the actual path to your file
+
+# Check the first few rows of the dataframe
+print(df.head())
+
+# Define X (features) and Y (target)
+# Assuming you're predicting the 'Close' column
+X = df.drop(['Date','Brand_Name','Ticker','Industry_Tag', 'Close','Country'], axis=1)  # Drop non-feature columns
+Y = df['Close']  # Target variable
+
+# Split the data into training and testing sets
+X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.25, random_state=44)
+
+knn = KNeighborsRegressor(n_neighbors=5)
+
+# Fit the model
+knn.fit(X_train, Y_train)
+
+# Predict on train and test sets
+Y_train_pred = knn.predict(X_train)
+Y_test_pred = knn.predict(X_test)
+
+# Calculate Mean Squared Error (or another suitable metric for regression)
+train_mse = mean_squared_error(Y_train, Y_train_pred)
+test_mse = mean_squared_error(Y_test, Y_test_pred)
+
+print(f'Training MSE: {train_mse:.2f}')
+print(f'Testing MSE: {test_mse:.2f}')
+
+from sklearn.model_selection import GridSearchCV
+from sklearn.neighbors import KNeighborsRegressor  # Use KNeighborsRegressor for regression tasks
+from sklearn.metrics import mean_squared_error  # Use MSE for regression evaluation
+
+# Assuming X_train, Y_train, X_test, Y_test are already defined
+
+# Define parameter grid for GridSearchCV
+params = {'n_neighbors': [2, 4, 6, 8, 10, 12]}  # Hyperparameter tuning for n_neighbors
+
+# Initialize KNeighborsRegressor
+knn = KNeighborsRegressor()
+
+# Set up GridSearchCV with 5-fold cross-validation
+model = GridSearchCV(knn, params, cv=5)
+
+# Fit the model to the training data
+model.fit(X_train, Y_train)
+
+# Predict on train and test sets
+Y_train_pred = model.predict(X_train)
+Y_test_pred = model.predict(X_test)
+
+# Calculate Mean Squared Error (MSE) for both train and test sets
+train_mse = mean_squared_error(Y_train, Y_train_pred)
+test_mse = mean_squared_error(Y_test, Y_test_pred)
+
+# Print the results
+print(f'Training MSE: {train_mse:.2f}')
+print(f'Testing MSE: {test_mse:.2f}')
+
+# Optionally, print the best parameters found by GridSearchCV
+print(f'Best n_neighbors: {model.best_params_["n_neighbors"]}')
+
+
+# Plot the predicted vs actual values for the test set
+plt.figure(figsize=(8,6))
+plt.scatter(Y_test, Y_test_pred, color='blue', alpha=0.5)
+plt.plot([Y_test.min(), Y_test.max()], [Y_test.min(), Y_test.max()], color='red', linestyle='--')  # Line of perfect prediction
+plt.title('Predicted vs Actual Values')
+plt.xlabel('Actual Values')
+plt.ylabel('Predicted Values')
+plt.show()
+
+# Residuals for the test set
+residuals = Y_test - Y_test_pred
+
+plt.figure(figsize=(8,6))
+plt.scatter(Y_test_pred, residuals, color='blue', alpha=0.5)
+plt.axhline(y=0, color='red', linestyle='--')  # Zero line for residuals
+plt.title('Residual Plot')
+plt.xlabel('Predicted Values')
+plt.ylabel('Residuals')
+plt.show()
+
+
+
